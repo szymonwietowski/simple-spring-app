@@ -31,3 +31,24 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('copyLibs', Copy) {
+	from "$projectDir/build/libs"
+	include '*.jar'
+	into "$projectDir/libs"
+	doLast {
+		println "Copied JAR files to libs directory."
+		exec {
+			commandLine 'git', 'add', 'libs/'
+			standardOutput = System.out
+			errorOutput = System.err
+		}
+	}
+}
+
+tasks.named('jar') {
+	finalizedBy 'copyLibs'
+}
+tasks.named('bootJar') {
+	finalizedBy 'copyLibs'
+}
